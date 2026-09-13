@@ -1,6 +1,6 @@
 {
   "name": "cat-aptitude-skill",
-  "owner": { "name": "pushkalgambhir" },
+  "owner": { "name": "asyncninja0012" },
   "metadata": {
     "description": "Visual aptitude / CAT question solver skill for Claude Code and Antigravity CLI",
     "version": "1.0.0"
@@ -11,7 +11,7 @@
       "source": "./",
       "description": "Solves aptitude and competitive-exam questions supplied as screenshots: bar/line/pie/stacked/dual-axis DI, caselets, LR and DILR sets, Venn min-max, geometry figures, Data Sufficiency and quant. Optimizes for correctness by transcribing the visual, validating it, and computing in Python.",
       "version": "1.0.0",
-      "author": { "name": "pushkalgambhir" },
+      "author": { "name": "asyncninja0012" },
       "keywords": ["cat", "aptitude", "data-interpretation", "logical-reasoning", "quant", "gmat", "exam", "charts"],
       "category": "productivity",
       "strict": false

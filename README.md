@@ -42,7 +42,7 @@ percentages in its head.
 ### Antigravity CLI (`agy`)
 
 ```bash
-git clone https://github.com/<you>/cat-aptitude-skill.git
+git clone https://github.com/asyncninja0012/cat-aptitude-skill.git
 cd cat-aptitude-skill
 ./install.sh              # Windows: powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
@@ -77,7 +77,7 @@ Other install modes:
 ### Claude Code
 
 ```
-/plugin marketplace add <you>/cat-aptitude-skill
+/plugin marketplace add asyncninja0012/cat-aptitude-skill
 /plugin install cat-aptitude@cat-aptitude-skill
 ```
 
