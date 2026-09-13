@@ -48,8 +48,23 @@ cd cat-aptitude-skill
 ```
 
 That registers this checkout in `~/.gemini/config/skills.json`, so a later
-`git pull` updates the skill with no reinstall. Start a new `agy` session — the
-skill loads automatically, and is also available as `/cat-visual-aptitude`.
+`git pull` updates the skill with no reinstall — `agy` re-reads the directory
+each session. Start a new `agy` session and paste a question; the skill activates
+on its own from its description.
+
+Confirm the install, and which version is live:
+
+```bash
+agy --print='Which skills are available to you? Names only.'
+# -> cat-visual-aptitude
+
+agy --print='Without reading any files, what skill version does the
+cat-visual-aptitude description state?'
+# -> 1.0.0
+```
+
+The version marker lives in the skill's `description`, which is always in the
+agent's context, so neither check needs file-read permission.
 
 Other install modes:
 

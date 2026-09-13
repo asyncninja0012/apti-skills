@@ -1,10 +1,12 @@
 ---
 name: cat-visual-aptitude
 description: >-
-  Solves aptitude and competitive-exam questions supplied as screenshots, photos or images — bar/line/pie/stacked/dual-axis charts, caselet tables, Data Interpretation (DI), Logical Reasoning (LR/DILR) sets, Venn and set min-max problems, geometry figures, Data Sufficiency, and Quantitative Aptitude of the kind found in CAT, XAT, SNAP, NMAT, GMAT, GRE and campus placement tests. Also verifies a user's own attempted answer and diagnoses which mistake produced it, and explains the exam-speed method on request. Use this skill whenever the user pastes an image of an exam question, or mentions DI, LR, DILR, aptitude, CAT, XAT, GMAT, percentile, quant, mocks or sectionals, or asks "solve this", "which option" or "check my answer" alongside a chart, graph, table, figure or multiple-choice options — even if they do not name the skill. Optimizes for correctness first and speed second by transcribing the visual into data, validating it, and computing in Python instead of mental arithmetic.
+  Solves aptitude and competitive-exam questions supplied as screenshots, photos or images — bar/line/pie/stacked/dual-axis charts, caselet tables, Data Interpretation (DI), Logical Reasoning (LR/DILR) sets, Venn and set min-max problems, geometry figures, Data Sufficiency, and Quantitative Aptitude of the kind found in CAT, XAT, SNAP, NMAT, GMAT, GRE and campus placement tests. Also verifies a user's own attempted answer and diagnoses which mistake produced it, and explains the exam-speed method on request. Use this skill whenever the user pastes an image of an exam question, or mentions DI, LR, DILR, aptitude, CAT, XAT, GMAT, percentile, quant, mocks or sectionals, or asks "solve this", "which option" or "check my answer" alongside a chart, graph, table, figure or multiple-choice options — even if they do not name the skill. Optimizes for correctness first and speed second by transcribing the visual into data, validating it, and computing in Python instead of mental arithmetic. Skill version 1.0.0.
 ---
 
 # CAT / Aptitude Visual Question Solver
+
+`skill-version: 1.0.0`
 
 Wrong answers on these questions come from two places, almost never from weak
 reasoning:

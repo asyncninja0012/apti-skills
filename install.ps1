@@ -60,9 +60,10 @@ function Add-Entry($ConfigPath, $EntryPath) {
 switch ($Mode) {
   'register' {
     Add-Entry (Join-Path $UserHome '.gemini\config\skills.json') ($SkillsDir -replace '\\', '/')
-    Write-Host "`nInstalled globally for agy. Start a new session; the skill loads"
-    Write-Host "automatically and is also available as /$SkillName."
-    Write-Host "Update later with: git -C `"$Repo`" pull"
+    Write-Host "`nInstalled globally for agy. Start a new session and paste a question;"
+    Write-Host "the skill activates on its own. Confirm with:"
+    Write-Host "  agy --print='Which skills are available to you? Names only.'"
+    Write-Host "Update later with: git -C `"$Repo`" pull  (no reinstall needed)"
   }
   'copy' {
     $dest = Join-Path $UserHome ".gemini\config\skills\$SkillName"

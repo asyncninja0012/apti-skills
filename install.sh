@@ -63,9 +63,10 @@ case "$MODE" in
   register)
     add_entry "$HOME/.gemini/config/skills.json" "$SKILLS_DIR"
     echo
-    echo "Installed globally for agy. Start a new session; the skill loads"
-    echo "automatically and is also available as /$SKILL_NAME."
-    echo "Update later with: git -C \"$REPO\" pull"
+    echo "Installed globally for agy. Start a new session and paste a question;"
+    echo "the skill activates on its own. Confirm with:"
+    echo "  agy --print='Which skills are available to you? Names only.'"
+    echo "Update later with: git -C \"$REPO\" pull  (no reinstall needed)"
     ;;
   copy)
     copy_to "$HOME/.gemini/config/skills/$SKILL_NAME"
