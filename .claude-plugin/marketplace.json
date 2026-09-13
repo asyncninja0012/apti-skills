@@ -1,5 +1,5 @@
 {
-  "name": "cat-aptitude-skill",
+  "name": "apti-skills",
   "owner": { "name": "asyncninja0012" },
   "metadata": {
     "description": "Visual aptitude / CAT question solver skill for Claude Code and Antigravity CLI",

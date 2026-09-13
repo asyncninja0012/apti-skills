@@ -42,8 +42,8 @@ percentages in its head.
 ### Antigravity CLI (`agy`)
 
 ```bash
-git clone https://github.com/asyncninja0012/cat-aptitude-skill.git
-cd cat-aptitude-skill
+git clone https://github.com/asyncninja0012/apti-skills.git
+cd apti-skills
 ./install.sh              # Windows: powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
@@ -72,13 +72,13 @@ Other install modes:
 | --- | --- |
 | `./install.sh copy` | Copy into `~/.gemini/config/skills/` (no auto-update) |
 | `./install.sh workspace` | Register in `.agents/skills.json` for this repo only — commit it to share with a team |
-| `agy plugin install /path/to/cat-aptitude-skill` | Install the whole repo as an agy **plugin** (it carries a `plugin.json`); manage with `agy plugin list / disable / uninstall` |
+| `agy plugin install /path/to/apti-skills` | Install the whole repo as an agy **plugin** (it carries a `plugin.json`); manage with `agy plugin list / disable / uninstall` |
 
 ### Claude Code
 
 ```
-/plugin marketplace add asyncninja0012/cat-aptitude-skill
-/plugin install cat-aptitude@cat-aptitude-skill
+/plugin marketplace add asyncninja0012/apti-skills
+/plugin install cat-aptitude@apti-skills
 ```
 
 Or without the marketplace: `./install.sh claude`, which copies the skill into
