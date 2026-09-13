@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*_crop.png
+*_grid.png
+*_strip*.png
+.DS_Store
