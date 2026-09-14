@@ -1,12 +1,12 @@
 ---
 name: cat-visual-aptitude
 description: >-
-  Solves aptitude and competitive-exam questions supplied as screenshots, photos or images — bar/line/pie/stacked/dual-axis charts, caselet tables, Data Interpretation (DI), Logical Reasoning (LR/DILR) sets, Venn and set min-max problems, geometry figures, Data Sufficiency, and Quantitative Aptitude of the kind found in CAT, XAT, SNAP, NMAT, GMAT, GRE and campus placement tests. Also verifies a user's own attempted answer and diagnoses which mistake produced it, and explains the exam-speed method on request. Use this skill whenever the user pastes an image of an exam question, or mentions DI, LR, DILR, aptitude, CAT, XAT, GMAT, percentile, quant, mocks or sectionals, or asks "solve this", "which option" or "check my answer" alongside a chart, graph, table, figure or multiple-choice options — even if they do not name the skill. Also handles non-verbal / abstract reasoning: figure classification ("which set does this figure belong to"), figure series and analogies, odd-one-out, mirror and water images, paper folding and punching, cube and dice nets, embedded and hidden figures, counting figures, and matrix/grid pattern puzzles. Optimizes for correctness first and speed second: numeric questions are transcribed into data, validated and computed in Python, while non-verbal figure puzzles take a no-Python fast path answered by direct inspection. Skill version 1.1.0.
+  Solves aptitude and competitive-exam questions supplied as screenshots, photos or images — bar/line/pie/stacked/dual-axis charts, caselet tables, Data Interpretation (DI), Logical Reasoning (LR/DILR) sets, Venn and set min-max problems, geometry figures, Data Sufficiency, and Quantitative Aptitude of the kind found in CAT, XAT, SNAP, NMAT, GMAT, GRE and campus placement tests. Also verifies a user's own attempted answer and diagnoses which mistake produced it, and explains the exam-speed method on request. Use this skill whenever the user pastes an image of an exam question, or mentions DI, LR, DILR, aptitude, CAT, XAT, GMAT, percentile, quant, mocks or sectionals, or asks "solve this", "which option" or "check my answer" alongside a chart, graph, table, figure or multiple-choice options — even if they do not name the skill. Also handles non-verbal / abstract reasoning: figure classification ("which set does this figure belong to"), figure series and analogies, odd-one-out, mirror and water images, paper folding and punching, cube and dice nets, embedded and hidden figures, counting figures, and matrix/grid pattern puzzles. Optimizes for correctness first and speed second: numeric questions are transcribed into data, validated and computed in Python, while non-verbal figure puzzles take a no-Python fast path answered by direct inspection. Skill version 1.2.0.
 ---
 
 # CAT / Aptitude Visual Question Solver
 
-`skill-version: 1.1.0`
+`skill-version: 1.2.0`
 
 Wrong answers on these questions come from two places, almost never from weak
 reasoning:
@@ -30,7 +30,7 @@ read out of the image?*
 | Route | The image shows | Pipeline | Python | Budget |
 | --- | --- | --- | --- | --- |
 | **NUM** | axes, numbers, a table, currency, %, a caselet, constraints in words | Phases 1–4 below | **Yes, always** | 60–90 s |
-| **FIG** | only shapes — figures made of triangles/stars/circles/squares, arrows, dots, folded paper, cubes, dice, matrices of pictures | [Fast path](#fast-path--non-verbal-figure-puzzles) | **No. Never.** | 20–40 s |
+| **FIG** | only shapes — figures made of triangles/stars/circles/squares, arrows, dots, folded paper, cubes, dice, matrices of pictures | [Fast path](#fast-path--non-verbal-figure-puzzles) | **No.** `crop.py --panels --sheet` only | 30–90 s |
 
 FIG covers: *which set does this figure belong to*, figure classification and
 grouping, figure series ("what comes next"), figure analogy (A : B :: C : ?),
@@ -46,13 +46,25 @@ already do. Do not do it. Likewise do not run `crop.py` / `overlay.py` /
 `calibrate.py`: pixel calibration is for reading values off an axis, and a FIG
 question has no axis.
 
-Only two things pull a FIG question back to a tool:
+Three things pull a FIG question back to a tool. The first is routine and you
+should reach for it early:
 
-- A detail is genuinely too small to resolve (is that inner shape a pentagon or a
-  hexagon?) → one `scripts/crop.py` call on that cell, then continue by eye.
-- The rule turns out to be arithmetic over many cells *and* the count is large or
-  error-prone (e.g. "how many triangles in this figure", a 6×6 dot-pattern
-  count) → one tiny script for that count only, not for the classification.
+- **The answer might hinge on a count** — strokes in a polyline, sides, vertices,
+  dots, intersections, enclosed regions. Any line-art set (zigzags, staircases,
+  open polylines, dot patterns) is a count until proven otherwise. Run
+  `python scripts/crop.py IMAGE --panels --sheet --out-dir <scratch>` **first**:
+  one call tiles every bordered cell, upscaled and labelled, into a single image,
+  so the whole question costs one crop and one look. Counting strokes on a
+  90-px-tall figure is how this skill produces a confident wrong answer.
+- A shape is too small to name (pentagon or hexagon?) → the same `--panels --sheet` call
+  covers it.
+- The rule turns out to be arithmetic over many cells *and* the count is large
+  (e.g. "how many triangles in this figure", a 6×6 dot pattern) → one tiny
+  script for that count only, not for the classification.
+
+`--panels --sheet` is not the script this route forbids: it produces a *better image*,
+not a restatement of what you already read. What stays banned is a script that
+hardcodes shape names and prints them back.
 
 ## Fast path — non-verbal figure puzzles
 
@@ -61,7 +73,9 @@ Four steps, all in the response, no tools:
 1. **Read the stem and options first.** "Belongs to which set", "next in
    series", "odd one out" and "analogy" have different answer shapes, and one of
    the options is often "neither / none".
-2. **Describe each figure in one line** using a fixed vocabulary — shape name,
+2. **Crop the cells if a count could decide it** — one
+   `scripts/crop.py IMAGE --panels --sheet --out-dir <scratch>` call, always for line-art
+   sets. Then **describe each figure in one line** using a fixed vocabulary — shape name,
    fill (black / white / outline), and nesting written with `⊃`. E.g.
    `A1: white square ⊃ black circle | black hexagon`. Use `|` between the
    independent elements of a cell. This line *is* the transcription; nothing
@@ -328,5 +342,6 @@ Confidence: high
 - One script for the whole set.
 - Do not restate the question back to the user before solving.
 - Budget: ≈90 s of tool work for a single DI question, ≈3 min for a 4-question
-  set, ≈4 min for an LR set, ≈30 s and **zero tool calls** for a FIG question. On a `verify` where you agree with the user, say so
+  set, ≈4 min for an LR set, ≤120 s for a FIG question — of which at most one
+  `crop.py --panels --sheet` call (~1 s of compute) and **no solver script**. On a `verify` where you agree with the user, say so
   in one line and stop.

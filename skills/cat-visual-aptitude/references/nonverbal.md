@@ -1,8 +1,12 @@
 # Non-verbal / abstract reasoning — FIG route
 
-No Python. No pixel calibration. These questions are decided by naming what is
-in each figure precisely, then testing a short list of known rules. The whole
-cost is in *describing accurately*; the rule then falls out in seconds.
+No solver script. No pixel calibration. These questions are decided by naming
+what is in each figure precisely, then testing a short list of known rules. The
+whole cost is in *describing accurately*; the rule then falls out in seconds.
+
+The one tool that earns its place is `scripts/crop.py --panels --sheet`, which enlarges
+every cell in a single call — see § 0. Reach for it before describing whenever a
+count could decide the answer.
 
 ## 0. Describe before you theorise
 
@@ -26,9 +30,30 @@ Count the elements per cell as you write. A miscount here is the only way these
 questions go wrong — every wrong answer traces back to a shape named wrong, a
 fill read backwards, or a nesting missed, never to faulty logic.
 
-Resolve ambiguity *now*, not later: a 5-sided blob is a pentagon, a 6-sided one a
-hexagon, and at small sizes they look alike — if it decides the answer and you
-cannot resolve it, crop that one cell with `scripts/crop.py`.
+### Crop first when the answer is a count
+
+Run `python scripts/crop.py IMAGE --panels --sheet --out-dir <scratch>` **before**
+describing, whenever either of these is true:
+
+1. **The rule might be a count.** Line-art puzzles — polylines, zigzags,
+   staircases, dot patterns, matchstick figures — are usually separated by the
+   *number* of strokes, sides, vertices, dots or intersections. At screenshot
+   scale a 5-stroke zigzag and a 4-stroke zigzag look identical, and the wrong
+   count is not a wrong *rule*, it is a confidently wrong answer. Counting is the
+   one FIG operation the eye cannot be trusted on unzoomed.
+2. **A shape is ambiguous.** A 5-sided blob is a pentagon, a 6-sided one a
+   hexagon, and at small sizes they look alike.
+
+`--panels` finds the bordered cells automatically (both set rows plus the target
+figure) and `--sheet` tiles them, labelled `r<band>c<col>`, into **one** enlarged
+image. So the whole question costs one crop call and one look, about a second of
+compute. It trims screenshot sidebars first, so a black chrome strip down the
+edge does not defeat it. Drop `--sheet` only if you need one cell very large.
+Then count on the sheet, never on the original.
+
+This is the one tool call the FIG path budgets for. It is not the script the
+route forbids: it produces a *better image*, not a restatement of what you
+already read.
 
 ## 1. Classification / grouping — "which set does this figure belong to?"
 
@@ -49,7 +74,7 @@ Test in this order. Stop at the first that separates the sets cleanly.
 | 7 | **Symmetry** | Each figure has a vertical axis of symmetry vs not; rotational symmetry order |
 | 8 | **Position / orientation** | Which element is upper-left vs lower-right; all figures point the same way; one element rotated relative to the other |
 | 9 | **Size relation** | Larger element black vs white; size order matches nesting order |
-| 10 | **Line/intersection count** | Number of line segments, intersections, enclosed regions, or free ends |
+| 10 | **Line/intersection count** | Number of line segments, intersections, enclosed regions, or free ends — **count on a cropped panel, never on the original** |
 
 Procedure:
 
@@ -66,6 +91,11 @@ Procedure:
 A figure whose description is *identical in structure* to one set member (same
 nesting, same fills, one shape swapped) is a strong tell — check the rule anyway,
 but expect it to confirm.
+
+**The silhouette trap.** On line-art sets the target is deliberately drawn in the
+same *idiom* as a member of the wrong set — same zigzag, same circle placement —
+and differs only by one stroke. Matching the overall look gives the wrong set
+every time. Count, then match.
 
 ## 2. Figure series — "what comes next?"
 

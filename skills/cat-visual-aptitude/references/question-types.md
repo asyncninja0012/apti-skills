@@ -164,7 +164,7 @@ Shapes only, no numbers. Full playbook: [nonverbal.md](./nonverbal.md).
 
 | Type | Answer by |
 | --- | --- |
-| **Figure classification** ("which set does this figure belong to?", "group the figures") | Find the one binary attribute separating the sets. Start with: are the two black shapes in a cell identical? the two white ones? Then nesting-chain direction, fill counts, shape counts, side counts. |
+| **Figure classification** ("which set does this figure belong to?", "group the figures") | Find the one binary attribute separating the sets. Start with: are the two black shapes in a cell identical? the two white ones? Then nesting-chain direction, fill counts, shape counts, side counts. For line-art cells, count strokes on a `--panels --sheet` crop — the target is drawn to mimic the *wrong* set's silhouette. |
 | **Figure series** ("what comes next") | Track rotation, movement, count, fill and size as independent series; extend each; combine. |
 | **Figure analogy** (A : B :: C : ?) | Name the single A→B transformation, apply verbatim to C. Beware reflection-vs-rotation options. |
 | **Odd one out** | The attribute shared by all but one — usually four are rotations of each other and one is their mirror. |
@@ -177,5 +177,11 @@ Shapes only, no numbers. Full playbook: [nonverbal.md](./nonverbal.md).
 
 Do **not** write a script that hardcodes shape names and prints them back. It
 checks nothing the description did not already fix, and it is the main source of
-slow answers on this route. `crop.py` is allowed for one genuinely illegible
-cell; `overlay.py` and `calibrate.py` never apply — there is no axis.
+slow answers on this route. `overlay.py` and `calibrate.py` never apply — there
+is no axis.
+
+`crop.py --panels --sheet` *is* expected here: it auto-splits every bordered
+cell and tiles them, upscaled, into one labelled image. Use it before describing whenever the rule could be a
+count — strokes, sides, vertices, dots, intersections — which is most line-art
+sets. Miscounting strokes on an unzoomed figure is the main source of *wrong*
+answers on this route.

@@ -26,7 +26,10 @@ percentages in its head.
   water images, paper folding and punching, cubes/dice/nets, embedded figures,
   counting figures, and 3×3 matrix patterns. These take a **no-Python fast
   path**: the agent describes each figure in one line and tests a ranked rule
-  checklist, so they come back in seconds instead of a script round-trip.
+  checklist, so they come back in seconds instead of a script round-trip. When
+  the rule could be a *count* (strokes, sides, dots, intersections) it first runs
+  `crop.py --panels --sheet`, which auto-detects every figure cell and tiles them
+  enlarged into one labelled image — counting strokes on an unzoomed screenshot is how these go wrong.
 - **Modes** — `solve` (default), `verify` ("check my answer" — it diagnoses which
   mistake produced your value), `teach` (the 60-second exam method), and `set`
   (4–6 questions on one data set answered in a single pass).
@@ -42,7 +45,8 @@ percentages in its head.
 | Hedging on an uncertain read | `sensitivity()` re-runs the answer at every corner of the reading interval and reports ROBUST or SENSITIVE |
 | Dropping one LR constraint | `scripts/lr.py` enumerates and prints the constraint count back |
 | Hand-waving a set min/max | `scripts/sets.py` searches the Venn regions and prints an attainable witness |
-| Spinning up a script for a question with no numbers in it | Step 0a routes shapes-only figure puzzles to a tool-free fast path |
+| Spinning up a script for a question with no numbers in it | Step 0a routes shapes-only figure puzzles to a fast path with no solver script |
+| Miscounting strokes in thin line art | `crop.py --panels --sheet` auto-splits every figure cell and tiles them enlarged into one image, before any counting |
 
 ## Install
 
@@ -67,7 +71,7 @@ agy --print='Which skills are available to you? Names only.'
 
 agy --print='Without reading any files, what skill version does the
 cat-visual-aptitude description state?'
-# -> 1.1.0
+# -> 1.2.0
 ```
 
 The version marker lives in the skill's `description`, which is always in the
@@ -117,7 +121,7 @@ skills/cat-visual-aptitude/
 │   ├── nonverbal.md              abstract-figure rule checklist (no-Python route)
 │   └── formulas.md               quant formula and shortcut sheet
 └── scripts/
-    ├── crop.py                   crop / rotate / upscale / sharpen a region
+    ├── crop.py                   crop / rotate / upscale / sharpen; --panels/--sheet auto-split figure cells
     ├── overlay.py                labelled pixel grid for precise coordinate reads
     ├── calibrate.py              pixel -> value by two-point calibration
     ├── di.py                     validators, percentage maths, option matching, sensitivity
@@ -128,6 +132,7 @@ skills/cat-visual-aptitude/
 ## Verify it works
 
 ```bash
+python skills/cat-visual-aptitude/scripts/crop.py --selftest
 python skills/cat-visual-aptitude/scripts/di.py   --selftest
 python skills/cat-visual-aptitude/scripts/lr.py   --selftest
 python skills/cat-visual-aptitude/scripts/sets.py --selftest

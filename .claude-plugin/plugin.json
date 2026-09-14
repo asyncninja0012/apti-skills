@@ -1,7 +1,7 @@
 {
   "name": "cat-aptitude",
   "description": "Solves CAT / XAT / GMAT-style aptitude questions from screenshots: DI charts, LR sets, Venn min-max, geometry, Data Sufficiency and quant. Transcribes the image, validates it, and computes in Python.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": { "name": "asyncninja0012" },
   "keywords": ["cat", "aptitude", "data-interpretation", "logical-reasoning", "quant", "gmat", "exam", "ocr", "charts"]
 }
