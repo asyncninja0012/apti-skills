@@ -1,12 +1,12 @@
 ---
 name: cat-visual-aptitude
 description: >-
-  Solves aptitude and competitive-exam questions supplied as screenshots, photos or images — bar/line/pie/stacked/dual-axis charts, caselet tables, Data Interpretation (DI), Logical Reasoning (LR/DILR) sets, Venn and set min-max problems, geometry figures, Data Sufficiency, and Quantitative Aptitude of the kind found in CAT, XAT, SNAP, NMAT, GMAT, GRE and campus placement tests. Also verifies a user's own attempted answer and diagnoses which mistake produced it, and explains the exam-speed method on request. Use this skill whenever the user pastes an image of an exam question, or mentions DI, LR, DILR, aptitude, CAT, XAT, GMAT, percentile, quant, mocks or sectionals, or asks "solve this", "which option" or "check my answer" alongside a chart, graph, table, figure or multiple-choice options — even if they do not name the skill. Optimizes for correctness first and speed second by transcribing the visual into data, validating it, and computing in Python instead of mental arithmetic. Skill version 1.0.0.
+  Solves aptitude and competitive-exam questions supplied as screenshots, photos or images — bar/line/pie/stacked/dual-axis charts, caselet tables, Data Interpretation (DI), Logical Reasoning (LR/DILR) sets, Venn and set min-max problems, geometry figures, Data Sufficiency, and Quantitative Aptitude of the kind found in CAT, XAT, SNAP, NMAT, GMAT, GRE and campus placement tests. Also verifies a user's own attempted answer and diagnoses which mistake produced it, and explains the exam-speed method on request. Use this skill whenever the user pastes an image of an exam question, or mentions DI, LR, DILR, aptitude, CAT, XAT, GMAT, percentile, quant, mocks or sectionals, or asks "solve this", "which option" or "check my answer" alongside a chart, graph, table, figure or multiple-choice options — even if they do not name the skill. Also handles non-verbal / abstract reasoning: figure classification ("which set does this figure belong to"), figure series and analogies, odd-one-out, mirror and water images, paper folding and punching, cube and dice nets, embedded and hidden figures, counting figures, and matrix/grid pattern puzzles. Optimizes for correctness first and speed second: numeric questions are transcribed into data, validated and computed in Python, while non-verbal figure puzzles take a no-Python fast path answered by direct inspection. Skill version 1.1.0.
 ---
 
 # CAT / Aptitude Visual Question Solver
 
-`skill-version: 1.0.0`
+`skill-version: 1.1.0`
 
 Wrong answers on these questions come from two places, almost never from weak
 reasoning:
@@ -20,7 +20,66 @@ Slow answers come from a third place: open-ended exploration. Do not search the
 web, do not scan the workspace, do not write plan artifacts. This is a
 self-contained task. Target: one image read, one script run, one answer.
 
-## Step 0 — Classify the request, then the question
+## Step 0a — Route: numeric question, or figure puzzle?
+
+**Do this before anything else. It decides whether Python runs at all.**
+
+Look at the image once and ask: *does answering require arithmetic on numbers
+read out of the image?*
+
+| Route | The image shows | Pipeline | Python | Budget |
+| --- | --- | --- | --- | --- |
+| **NUM** | axes, numbers, a table, currency, %, a caselet, constraints in words | Phases 1–4 below | **Yes, always** | 60–90 s |
+| **FIG** | only shapes — figures made of triangles/stars/circles/squares, arrows, dots, folded paper, cubes, dice, matrices of pictures | [Fast path](#fast-path--non-verbal-figure-puzzles) | **No. Never.** | 20–40 s |
+
+FIG covers: *which set does this figure belong to*, figure classification and
+grouping, figure series ("what comes next"), figure analogy (A : B :: C : ?),
+odd-one-out, mirror/water images, paper folding and punching, cube folding and
+dice, embedded/hidden figures, counting figures, dot situations, matrix/grid
+pattern puzzles, and completing a 3×3 of pictures.
+
+There are **no numbers to transcribe** on a FIG question, so Phase 1's data
+table, Phase 2's validators and Phase 3's script have nothing to operate on.
+Writing a script that hardcodes `{"fig1": ["star", "circle"]}` and then prints
+those same strings back is pure latency — it adds no check the eye did not
+already do. Do not do it. Likewise do not run `crop.py` / `overlay.py` /
+`calibrate.py`: pixel calibration is for reading values off an axis, and a FIG
+question has no axis.
+
+Only two things pull a FIG question back to a tool:
+
+- A detail is genuinely too small to resolve (is that inner shape a pentagon or a
+  hexagon?) → one `scripts/crop.py` call on that cell, then continue by eye.
+- The rule turns out to be arithmetic over many cells *and* the count is large or
+  error-prone (e.g. "how many triangles in this figure", a 6×6 dot-pattern
+  count) → one tiny script for that count only, not for the classification.
+
+## Fast path — non-verbal figure puzzles
+
+Four steps, all in the response, no tools:
+
+1. **Read the stem and options first.** "Belongs to which set", "next in
+   series", "odd one out" and "analogy" have different answer shapes, and one of
+   the options is often "neither / none".
+2. **Describe each figure in one line** using a fixed vocabulary — shape name,
+   fill (black / white / outline), and nesting written with `⊃`. E.g.
+   `A1: white square ⊃ black circle | black hexagon`. Use `|` between the
+   independent elements of a cell. This line *is* the transcription; nothing
+   else is needed.
+3. **Test the rule checklist in order** — the ranked list of rules that actually
+   appear on these papers is in
+   [references/nonverbal.md](./references/nonverbal.md). Stop at the first rule
+   that holds for **every** figure in the group and fails for the contrast group.
+   Do not invent a rule from one figure and go looking for support.
+4. **Verify against the other group before answering.** A rule is only an answer
+   if it separates: it must hold across all of Set A *and* be violated by all of
+   Set B (or by every distractor). Then apply it to the target figure and say in
+   one sentence why the other option is excluded.
+
+If step 3 reaches the end of the checklist without a clean separator, say so and
+give the best-supported reading with `Confidence: low` — do not keep cycling.
+
+## Step 0b — Classify the request, then the question
 
 **Request mode** (from the user's words; default `solve`):
 
@@ -38,11 +97,14 @@ whenever the question is anything other than a plain bar/line/pie/table DI.
 Common escalations: dual-axis combo chart, cumulative/ogive, index-to-100 series,
 a chart of growth *rates*, radar/scatter/bubble/waterfall, route-network and
 games-and-tournaments sets, Data Sufficiency, geometry figures ("not to scale"),
-cryptarithms, binary logic, para-jumbles and other VARC.
+cryptarithms, binary logic, para-jumbles and other VARC. Non-verbal figure
+puzzles are § H there and [references/nonverbal.md](./references/nonverbal.md)
+— they do not use the pipeline at all.
 
-## Mandatory pipeline
+## Mandatory pipeline — NUM route only
 
-Never skip a phase. Never merge Phase 1 into Phase 3.
+Never skip a phase. Never merge Phase 1 into Phase 3. If Step 0a routed the
+question to **FIG**, skip this entire section and use the fast path above.
 
 ### Phase 1 — Transcribe (do NOT solve yet)
 
@@ -113,11 +175,16 @@ If the question is a missing-data DI puzzle (blank cells to be deduced from
 constraints), treat blanks as unknowns and solve them in Phase 3 with equations
 or enumeration — never by eyeballing a proportion.
 
-### Phase 3 — Compute in Python, always
+### Phase 3 — Compute in Python
 
 Write one short script and run it. Never do the arithmetic in prose, even when it
 looks trivial — a two-step percentage change done in-head is exactly where these
 answers go wrong.
+
+**The one exemption:** a question with no arithmetic in it. FIG puzzles (Step 0a),
+and the VARC types in `references/question-types.md` § F, are answered by
+inspection — a script there is latency with no accuracy return. Everything with a
+number in it gets a script, no exceptions.
 
 The script must:
 
@@ -228,6 +295,20 @@ Second route: 60/40 = 1.5× → +50% ✓
 Confidence: high
 ```
 
+For a **FIG** answer, the whole response is four lines — answer, the one-line
+descriptions of the relevant figures, the rule, and why the other option fails:
+
+```
+**Answer: (A) Set A**
+
+Set A: the two black shapes in a cell are the same shape (star+star, rect+rect,
+pentagon+pentagon, triangle+triangle).
+Set B: the two white shapes are the same (star+star, hexagon+hexagon, ...).
+Figure: black triangle + black triangle → matches Set A; whites are square and
+star, so not Set B.
+Confidence: high
+```
+
 - Add a **Flagged** line only when a value is `approx` *and* `sensitivity()` shows
   the option can change; then say which alternative read gives which option.
 - `Confidence: high` when every value is `exact` and two routes agree; `medium`
@@ -239,10 +320,13 @@ Confidence: high
 ## Speed rules
 
 - No web search. No workspace scanning. No implementation-plan artifact.
+- **Route first (Step 0a).** A FIG question that spends 90 s writing and running a
+  script that only echoes shape names back is the single biggest avoidable delay
+  in this skill. No numbers in the image → no script.
 - One image pass in Phase 1. Re-read only when a validation check fails, a label
   is illegible, or sensitivity is inconclusive.
 - One script for the whole set.
 - Do not restate the question back to the user before solving.
 - Budget: ≈90 s of tool work for a single DI question, ≈3 min for a 4-question
-  set, ≈4 min for an LR set. On a `verify` where you agree with the user, say so
+  set, ≈4 min for an LR set, ≈30 s and **zero tool calls** for a FIG question. On a `verify` where you agree with the user, say so
   in one line and stop.

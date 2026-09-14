@@ -3,6 +3,10 @@
 Identify the type from the visual, then follow its row. Anything not listed falls
 back to the generic Phase 1–4 pipeline in `SKILL.md`.
 
+**First check § H.** If the image contains only shapes and no numbers, it is a
+non-verbal figure puzzle: skip every row below, skip the pipeline, and use the
+fast path — [nonverbal.md](./nonverbal.md). No script is written for those.
+
 ## A. Data Interpretation — chart forms
 
 | Visual | Read it as | Type-specific danger | Extra Phase-2 check |
@@ -83,6 +87,9 @@ Formula sheet: [formulas.md](./formulas.md). Routing:
 
 ## D. Geometry and figure-based questions
 
+This section is for *measured* geometry — labelled lengths, angles, areas. A
+figure made only of unlabelled shapes with no measurement asked is § H, not this.
+
 The figure is a *schematic*. **"Figures are not to scale" applies even when it is
 not printed.**
 
@@ -150,3 +157,25 @@ No Python. Quote textual evidence instead of computing.
 - **Answer key visible**: solve independently first (see `SKILL.md` Phase 1). If
   you disagree with a visible key, say so plainly and show why — printed keys are
   wrong often enough to matter, and are frequently misaligned by one question.
+
+## H. Non-verbal / abstract reasoning (FIG route — no Python)
+
+Shapes only, no numbers. Full playbook: [nonverbal.md](./nonverbal.md).
+
+| Type | Answer by |
+| --- | --- |
+| **Figure classification** ("which set does this figure belong to?", "group the figures") | Find the one binary attribute separating the sets. Start with: are the two black shapes in a cell identical? the two white ones? Then nesting-chain direction, fill counts, shape counts, side counts. |
+| **Figure series** ("what comes next") | Track rotation, movement, count, fill and size as independent series; extend each; combine. |
+| **Figure analogy** (A : B :: C : ?) | Name the single A→B transformation, apply verbatim to C. Beware reflection-vs-rotation options. |
+| **Odd one out** | The attribute shared by all but one — usually four are rotations of each other and one is their mirror. |
+| **Mirror / water image** | Mirror flips left–right and reverses character order; water flips up–down and does not. Eliminate using a symmetric character. |
+| **Paper folding / punching** | Unfold one fold at a time, mirroring; check hole *count* first (n × 2^k). |
+| **Cubes, dice, nets** | Opposite faces never co-appear; on a net, opposite = separated by one face. Painted-cube counts are arithmetic → NUM. |
+| **Embedded / hidden figure** | Match angles and proportions, not overall silhouette. |
+| **Counting figures** (triangles, rectangles) | Count by size class; grid rectangles = C(m+1,2)·C(n+1,2) — arithmetic, so script that one. |
+| **Matrix / 3×3 pattern** | Rows, then columns, then diagonals; test superposition and the common-elements-cancel rule. |
+
+Do **not** write a script that hardcodes shape names and prints them back. It
+checks nothing the description did not already fix, and it is the main source of
+slow answers on this route. `crop.py` is allowed for one genuinely illegible
+cell; `overlay.py` and `calibrate.py` never apply — there is no axis.
